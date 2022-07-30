@@ -385,12 +385,14 @@ print_ascii(FILE *f, const struct number *n)
 {
 	int numbits, i, ch;
 
-	numbits = mpz_size(n->number) * mp_bits_per_limb;
+	numbits = mpz_sizeinbase(n->number, 2);
+	numbits = (numbits & ~7) + ((numbits & 7) ? 8 : 0);
 	while (numbits > 0) {
 		ch = 0;
 		for (i = 0; i < 8; i++)
 			ch |= mpz_tstbit(n->number, numbits-i-1) << (7 - i);
-		(void)putc(ch, f);
 		numbits -= 8;
+		if ((0 != ch) || (0 != numbits))
+			(void)putc(ch, f);
 	}
 }

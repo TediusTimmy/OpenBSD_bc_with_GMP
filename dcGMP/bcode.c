@@ -1246,10 +1246,11 @@ bsqrt(void)
 	else {
 		scale = max(bmachine.scale, n->scale);
 		normalize(n, 2*scale);
-		mpz_init_set_ui(o, 1U);
 		mpz_init_set(x, n->number);
-		mpz_tdiv_q_2exp(x, x, mpz_sizeinbase(x, 2)/2);
 		mpz_init(y);
+		mpz_init(t);
+		mpz_init_set_ui(o, 1U);
+		mpz_tdiv_q_2exp(x, x, mpz_sizeinbase(x, 2)/2);
 		do {
 			mpz_tdiv_q(y, n->number, x);
 			mpz_add(y, x, y);
@@ -1260,10 +1261,12 @@ bsqrt(void)
 			mpz_set(y, t);
 		} while ((0 != mpz_sgn(y)) && (onecount += (0 == mpz_cmp(y, o)) ? 1 : 0) < 2);
 		mpz_sub(y, x, y);
-		r = bmalloc(sizeof(*r));
+		r = new_number();
 		r->scale = scale;
 		mpz_set(r->number, y);
 		mpz_clear(x);
+		mpz_clear(y);
+		mpz_clear(t);
 		mpz_clear(o);
 		push_number(r);
 	}
